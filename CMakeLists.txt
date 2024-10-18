@@ -31,8 +31,8 @@ target_include_directories(libsais PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 
-add_executable(libsais64 src/libsais16x64.c src/main.c)
-target_include_directories(libsais64 PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-)
+# add_executable(libsais64 src/libsais16x64.c src/main.c)
+# target_include_directories(libsais64 PUBLIC
+#     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#     $<INSTALL_INTERFACE:include>
+# )
