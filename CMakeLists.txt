@@ -18,7 +18,9 @@ add_library(libsais ${LIBSAIS_LIBRARY_TYPE})
 
 target_sources(libsais PRIVATE
     include/libsais16x64.h
+    include/libsais32x64.h
     src/libsais16x64.c
+    src/libsais32x64.c
 )
 
 if(LIBSAIS_BUILD_SHARED_LIB)
