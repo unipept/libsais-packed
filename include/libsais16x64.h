@@ -60,18 +60,6 @@ extern "C" {
     */
     LIBSAIS16X64_API int64_t libsais16x64(const uint16_t * T, int64_t * SA, int64_t n, int64_t fs, int64_t * freq);
 
-    /**
-    * Constructs the suffix array of a given integer array.
-    * Note, during construction input array will be modified, but restored at the end if no errors occurred.
-    * @param T [0..n-1] The input integer array.
-    * @param SA [0..n-1+fs] The output array of suffixes.
-    * @param n The length of the integer array.
-    * @param k The alphabet size of the input integer array.
-    * @param fs Extra space available at the end of SA array (can be 0, but 4k or better 6k is recommended for optimal performance).
-    * @return 0 if no error occurred, -1 or -2 otherwise.
-    */
-    LIBSAIS16X64_API int64_t libsais16x64_long(int64_t * T, int64_t * SA, int64_t n, int64_t k, int64_t fs);
-
 #ifdef __cplusplus
 }
 #endif

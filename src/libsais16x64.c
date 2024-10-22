@@ -1351,13 +1351,6 @@ static void libsais16x64_induce_partial_order_32s_6k_omp(const sa_sint_t * RESTR
     libsais16x64_partial_sorting_scan_right_to_left_32s_6k_omp(T, SA, n, buckets, first_lms_suffix, left_suffixes_count, d, threads, thread_state);
 }
 
-static void libsais16x64_induce_partial_order_32s_2k_omp(const sa_sint_t * RESTRICT T, sa_sint_t * RESTRICT SA, sa_sint_t n, sa_sint_t k, sa_sint_t * RESTRICT buckets, sa_sint_t threads, LIBSAIS_THREAD_STATE * RESTRICT thread_state)
-{
-    libsais16x64_partial_sorting_scan_left_to_right_32s_1k_omp(T, SA, n, &buckets[1 * (fast_sint_t)k], threads, thread_state);
-    libsais16x64_partial_sorting_scan_right_to_left_32s_1k_omp(T, SA, n, &buckets[0 * (fast_sint_t)k], threads, thread_state);
-    libsais16x64_partial_sorting_gather_lms_suffixes_32s_1k_omp(SA, n, threads, thread_state);
-}
-
 static void libsais16x64_induce_partial_order_32s_1k_omp(const sa_sint_t * RESTRICT T, sa_sint_t * RESTRICT SA, sa_sint_t n, sa_sint_t k, sa_sint_t * RESTRICT buckets, sa_sint_t threads, LIBSAIS_THREAD_STATE * RESTRICT thread_state)
 {
     libsais16x64_count_suffixes_32s(T, n, k, buckets);
@@ -2547,19 +2540,6 @@ static sa_sint_t libsais16x64_main(const uint16_t * T, sa_sint_t * SA, sa_sint_t
     return index;
 }
 
-static sa_sint_t libsais16x64_main_long(sa_sint_t * T, sa_sint_t * SA, sa_sint_t n, sa_sint_t k, sa_sint_t fs, sa_sint_t threads)
-{
-    LIBSAIS_THREAD_STATE * RESTRICT thread_state = threads > 1 ? libsais16x64_alloc_thread_state(threads) : NULL;
-
-    sa_sint_t index = thread_state != NULL || threads == 1
-        ? libsais16x64_main_32s_entry(T, SA, n, k, fs, threads, thread_state)
-        : -2;
-
-    libsais16x64_free_thread_state(thread_state);
-
-    return index;
-}
-
 int64_t libsais16x64(const uint16_t * T, int64_t * SA, int64_t n, int64_t fs, int64_t * freq)
 {
     if ((T == NULL) || (SA == NULL) || (n < 0) || (fs < 0))
@@ -2574,19 +2554,4 @@ int64_t libsais16x64(const uint16_t * T, int64_t * SA, int64_t n, int64_t fs, in
     }
 
     return libsais16x64_main(T, SA, n, 0, 0, NULL, fs, freq, 1);
-}
-
-int64_t libsais16x64_long(int64_t * T, int64_t * SA, int64_t n, int64_t k, int64_t fs)
-{
-    if ((T == NULL) || (SA == NULL) || (n < 0) || (fs < 0))
-    {
-        return -1;
-    }
-    else if (n < 2)
-    {
-        if (n == 1) { SA[0] = 0; }
-        return 0;
-    }
-
-    return libsais16x64_main_long(T, SA, n, k, fs, 1);
 }
