@@ -17,8 +17,10 @@ endif()
 add_library(libsais ${LIBSAIS_LIBRARY_TYPE})
 
 target_sources(libsais PRIVATE
+    include/libsais64.h
     include/libsais16x64.h
     include/libsais32x64.h
+    src/libsais64.c
     src/libsais16x64.c
     src/libsais32x64.c
 )
@@ -33,7 +35,7 @@ target_include_directories(libsais PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 
-# add_executable(libsais64 src/libsais16x64.c src/main.c)
+# add_executable(libsais64 src/libsais64.c src/libsais16x64.c src/libsais32x64.c src/bitpacking.c src/main.c)
 # target_include_directories(libsais64 PUBLIC
 #     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 #     $<INSTALL_INTERFACE:include>
