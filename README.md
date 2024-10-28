@@ -22,53 +22,6 @@ The libsais provides simple C99 API to construct suffix array and Burrows-Wheele
 ## License
 The libsais is released under the [Apache License Version 2.0](LICENSE "Apache license")
 
-## Changes
-* July 31, 2024 (2.8.5)
-  * Miscellaneous changes to reduce compiler warnings about implicit functions.
-* June 13, 2024 (2.8.4)
-  * Additional OpenMP acceleration (libsais16 & libsais16x64).
-* June 11, 2024 (2.8.3)
-  * Implemented suffix array construction of a long 16-bit array (libsais16x64).
-* May 27, 2024 (2.8.2)
-  * Implemented suffix array construction of a long 64-bit array (libsais64).
-* April 5, 2024 (2.8.1)
-  * Fixed out-of-bound memory access issue for large inputs (libsais64).
-* March 3, 2024 (2.8.0)
-  * Implemented permuted longest common prefix array (PLCP) construction of an integer array.
-  * Fixed compilation error when compiling the library with OpenMP enabled.
-* February 26, 2024 (2.7.5)
-  * Improved performance of suffix array and burrows wheeler transform construction on degenerate inputs.
-* February 23, 2024 (2.7.4)
-  * Resolved strict aliasing violation resulted in invalid code generation by Intel compiler.
-* April 21, 2023 (2.7.3)
-  * CMake script for library build and integration with other projects.
-* April 18, 2023 (2.7.2)
-  * Fixed out-of-bound memory access issue for large inputs (libsais64).
-* June 19, 2022 (2.7.1)
-  * Improved cache coherence for ARMv8 architecture.
-* April 12, 2022 (2.7.0)
-  * Support for longest common prefix array (LCP) construction.
-* January 1, 2022 (2.6.5)
-  * Exposed functions to construct suffix array of a given integer array.
-  * Improved detection of various compiler intrinsics.
-  * Capped free space parameter to avoid crashing due to 32-bit integer overflow.
-* October 21, 2021 (2.6.0)
-  * libsais16 for 16-bit inputs.
-* October 15, 2021 (2.5.0)
-  * Support for optional symbol frequency tables.
-* July 14, 2021 (2.4.0)
-  * Reverse Burrows-Wheeler transform.
-* June 23, 2021 (2.3.0)
-  * Burrows-Wheeler transform with auxiliary indexes.
-* April 27, 2021 (2.2.0)
-  * libsais64 for inputs larger than 2GB.
-* April 19, 2021 (2.1.0)
-  * Additional OpenMP acceleration.
-* April 4, 2021 (2.0.0)
-  * OpenMP acceleration. 
-* February 23, 2021 (1.0.0)
-  * Initial release.
-
 ## Versions of the libsais
 * [libsais.c](src/libsais.c) (and corresponding [libsais.h](include/libsais.h)) is for suffix array, PLCP, LCP, forward BWT and reverse BWT construction over 8-bit inputs smaller than 2GB (2147483648 bytes).
   * [libsais64.c](src/libsais64.c) (and corresponding [libsais64.h](include/libsais64.h)) is optional extension of the library for inputs larger or equlas to 2GB (2147483648 bytes).
@@ -76,68 +29,41 @@ The libsais is released under the [Apache License Version 2.0](LICENSE "Apache l
 * [libsais16.c](src/libsais16.c) + [libsais16x64.c](src/libsais16x64.c) (and corresponding [libsais16.h](include/libsais16.h) + [libsais16x64.h](include/libsais16x64.h)) is independent version of the library for 16-bit inputs.
   * This version of the library could also be used to construct suffix array and BWT of a set of strings by adding a unique end-of-string symbol to each string and then computing the result for the concatenated string.
 
-## Examples of APIs (see [libsais.h](include/libsais.h), [libsais16.h](include/libsais16.h), [libsais16x64.h](include/libsais16x64.h) and [libsais64.h](include/libsais64.h) for complete APIs list)
+## Examples of APIs (see [libsais16x64.h](include/libsais16x64.h), see [libsais32x64.h](include/libsais32x64.h) and [libsais64.h](include/libsais64.h) for complete APIs list)
 ```c
     /**
     * Constructs the suffix array of a given string.
     * @param T [0..n-1] The input string.
     * @param SA [0..n-1+fs] The output array of suffixes.
     * @param n The length of the given string.
-    * @param fs Extra space available at the end of SA array (0 should be enough for most cases).
+    * @param fs The extra space available at the end of SA array (0 should be enough for most cases).
     * @param freq [0..255] The output symbol frequency table (can be NULL).
     * @return 0 if no error occurred, -1 or -2 otherwise.
     */
-    int32_t libsais(const uint8_t * T, int32_t * SA, int32_t n, int32_t fs, int32_t * freq);
+    int64_t libsais64(const uint8_t * T, int64_t * SA, int64_t n, int64_t fs, int64_t * freq);
 
     /**
-    * Constructs the suffix array of a given integer array.
-    * Note, during construction input array will be modified, but restored at the end if no errors occurred.
-    * @param T [0..n-1] The input integer array.
+    * Constructs the suffix array of a given 16-bit string.
+    * @param T [0..n-1] The input 16-bit string.
     * @param SA [0..n-1+fs] The output array of suffixes.
-    * @param n The length of the integer array.
-    * @param k The alphabet size of the input integer array.
-    * @param fs Extra space available at the end of SA array (can be 0, but 4k or better 6k is recommended for optimal performance).
+    * @param n The length of the given 16-bit string.
+    * @param fs The extra space available at the end of SA array (0 should be enough for most cases).
+    * @param freq [0..65535] The output 16-bit symbol frequency table (can be NULL).
     * @return 0 if no error occurred, -1 or -2 otherwise.
     */
-    int32_t libsais_int(int32_t * T, int32_t * SA, int32_t n, int32_t k, int32_t fs);
+    int64_t libsais16x64(const uint16_t * T, int64_t * SA, int64_t n, int64_t fs, int64_t * freq);
 
     /**
-    * Constructs the burrows-wheeler transformed string of a given string.
-    * @param T [0..n-1] The input string.
-    * @param U [0..n-1] The output string (can be T).
-    * @param A [0..n-1+fs] The temporary array.
-    * @param n The length of the given string.
-    * @param fs Extra space available at the end of A array (0 should be enough for most cases).
-    * @param freq [0..255] The output symbol frequency table (can be NULL).
-    * @return The primary index if no error occurred, -1 or -2 otherwise.
-    */
-    int32_t libsais_bwt(const uint8_t * T, uint8_t * U, int32_t * A, int32_t n, int32_t fs, int32_t * freq);
-
-    /**
-    * Constructs the original string from a given burrows-wheeler transformed string with primary index.
-    * @param T [0..n-1] The input string.
-    * @param U [0..n-1] The output string (can be T).
-    * @param A [0..n] The temporary array (NOTE, temporary array must be n + 1 size).
-    * @param n The length of the given string.
-    * @param freq [0..255] The input symbol frequency table (can be NULL).                	
-    * @param i The primary index.
+    * Constructs the suffix array of a given 32-bit string.
+    * @param T [0..n-1] The input 32-bit string.
+    * @param SA [0..n-1+fs] The output array of suffixes.
+    * @param n The length of the given 32-bit string.
+    * @param k The alphabet size.
+    * @param fs The extra space available at the end of SA array (0 should be enough for most cases).
+    * @param freq [0..65535] The output 32-bit symbol frequency table (can be NULL).
     * @return 0 if no error occurred, -1 or -2 otherwise.
     */
-    int32_t libsais_unbwt(const uint8_t * T, uint8_t * U, int32_t * A, int32_t n, const int32_t * freq, int32_t i);
-```
-
-## Example installation using [CPM](https://github.com/cpm-cmake/CPM.cmake)
-```cmake
-CPMAddPackage(
-  NAME libsais
-  GITHUB_REPOSITORY IlyaGrebnov/libsais
-  GIT_TAG v2.8.5
-  OPTIONS
-    "LIBSAIS_USE_OPENMP OFF"
-    "LIBSAIS_BUILD_SHARED_LIB OFF"
-)
-
-target_link_libraries(<your target> libsais)
+    LIBSAIS32X64_API int64_t libsais32x64(const uint32_t * T, int64_t * SA, int64_t n, int64_t k, int64_t fs, int64_t * freq);
 ```
 
 # Algorithm description
@@ -196,7 +122,3 @@ The SA-IS algorithm is quite elegant, yet implementing it efficiently presents m
 * In the SA-IS algorithm, after induced sorting, the ranks of LMS substrings are computed in suffix order. These ranks then need to be scattered to reorder them in string order before being gathered again to form the compacted string for recursion. At this point, some LMS substrings may be unique, meaning they don't share their rank with any other LMS substring. Being unique, these substrings are essentially already sorted, and their position relative to other LMS substrings is already determined. However, these unique LMS substrings may still be necessary for sorting other, non-unique LMS substrings during recursion-unless a unique LMS substring is immediately followed by another unique LMS substring in the string. In such cases, the rank of any subsequent unique LMS substrings becomes redundant in the compacted string, as it will not be utilized. Leveraging this insight, libsais employs a strategy to further reduce the size of the compacted string by omitting such redundant LMS substring ranks. This process involves a few steps. First, unique LMS substrings are identified by looking ahead while scanning LMS-positions in the suffix array during the ranking and scattering phase. When scattering LMS substring ranks to form the compacted string, the most significant bit (MSB) of the rank is used to mark that this rank is unique. Next, as the library scans the ranks in string order and detects tandems of unique ranks using the MSB, it then  recalculates the MSB for ranks which are redundant, thus markign them for removal from the compacted string. Subsequently, the libsais rescans the LMS-positions in suffix order to recompute the ranks, now focusing only on the ranks of the remaining LMS substrings. The library also uses MSB of first symbol of LMS substrings to mark that LMS substring is removed from the compacted string. Finally, the library builds the compacted string based on the newly recalculated ranks for the remaining LMS substrings, while also saving the final positions for the removed LMS substrings before proceeding with recursion. This reduction process not only further decreases the size of the compacted string but also reduces the alphabet size of the reduced string and creates additional free space in the suffix array, which can be utilized during recursion.
 * The SA-IS algorithm, while robust for suffix array construction, is not considered lightweight due to its need for additional memory for tasks such as position classification, induced sorting, the creation of compacted string representations, and recursive decomposition. To mitigate this, libsais optimizes memory usage by not storing position classifications and striving to reuse the memory space allocated for the suffix array for induced sorting, compacted string representations, and recursive decomposition processes. Since position classifications are not stored, the library recalculates them as needed, typically involving checks of adjacent symbols for a given position. Although this approach may seem straightforward, it introduces the challenge of random memory access. Nevertheless, libsais manages these accesses in a manner that either avoids unnecessary memory fetches or minimizes cache penalties. In situations where avoiding cache penalties is unfeasible, the library leverages the most significant bit (MSB) bits for computations, as branch mispredictions on modern microprocessors generally incur lower penalties than cache misses. Memory reuse for the suffix array, despite appearing straightforward, also presents hidden challenges related to implementation complexity. In certain cases, the available space in the suffix array may not suffice for the most optimal algorithm implementation mentioned above. Although such instances are rare, the library aims to deliver optimal performance without additional memory allocation by resorting to a less efficient variant of induced sorting. To accommodate various scenarios, libsais includes four distinct implementations tailored to different breakpoints based on alphabet size (denoted by 'k'): 6k, 4k, 2k, and 1k, with each implementation optimized to ensure performance efficiency. Extensive efforts have been dedicated to refining these implementations, including significant time invested in using various sanitizers to confirm the correctness of the algorithms. Ultimately, while there are specific inputs under which libsais might require additional memory-most of which tend to be synthetic tests designed specifically to challenge the SA-IS algorithm-such instances are relatively rare. In these exceptional cases, the library is designed to allocate only the minimum necessary amount of memory while still delivering the best possible performance.
 * The libsais library, initially was developed for constructing suffix arrays, but has broadened its scope to include the calculation of the longest common prefix (LCP) and both the forward and inverse Burrows-Wheeler Transform (BWT) with considerable efforts has been dedicated to refining these algorithms to ensure they deliver maximum performance and maintain the correctness. An illustrative example is the forward BWT, which performance is nearly identical to that of its suffix array construction which is achieved by integrating a modified version of the induced sorting implementation within the final stage of the SA-IS algorithm. Rather than inducing suffix positions at this stage, the library induces the Burrows-Wheeler Transform directly. This approach also supports in-place transformation, maintaining a memory usage of 5n, making it an sutable for data compression applications. Similarly, the inverse BWT is fine-tuned to operate in-place, adhering to the same memory efficiency of 5n with an additional optimization of a bi-gram LF-mapping technique, which allows for the decoding of two symbols simultaneously effectively reduces the number of cache misses during the inversion of the Burrows-Wheeler Transform.
- 
-# Benchmarks
-
-Full list of benchmarks are moved to own [Benchmarks.md](Benchmarks.md) file.
