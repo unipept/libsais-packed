@@ -35,8 +35,32 @@ target_include_directories(libsais PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 
-# add_executable(libsais64 src/libsais64.c src/libsais16x64.c src/libsais32x64.c src/bitpacking.c src/main.c)
-# target_include_directories(libsais64 PUBLIC
+add_executable(libsais64 src/libsais64.c src/libsais16x64.c src/libsais32x64.c benchmark_code/src/bitpacking.c benchmark_code/src/main.c)
+target_include_directories(libsais64 PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_include_directories(libsais64 PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/benchmark_code/include>
+    $<INSTALL_INTERFACE:include>
+)
+
+add_executable(libsais64_dna src/libsais64.c src/libsais16x64.c src/libsais32x64.c benchmark_code/src/bitpacking.c benchmark_code/src/main-dna.c)
+target_include_directories(libsais64_dna PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_include_directories(libsais64_dna PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/benchmark_code/include>
+    $<INSTALL_INTERFACE:include>
+)
+
+# add_executable(libsais64_dna_orig src/libsais64.c src/libsais16x64.c src/libsais32x64.c benchmark_code/src/bitpacking.c benchmark_code/src/main-dna-orig.c)
+# target_include_directories(libsais64_dna_orig PUBLIC
 #     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#     $<INSTALL_INTERFACE:include>
+# )
+# target_include_directories(libsais64_dna_orig PUBLIC
+#     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/benchmark_code/include>
 #     $<INSTALL_INTERFACE:include>
 # )
