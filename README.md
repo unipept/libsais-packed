@@ -1,6 +1,6 @@
-# libsais
+# unipept-libsais
 
-The libsais is a library for fast linear time suffix array, longest common prefix array and Burrows-Wheeler transform construction based on induced sorting algorithm described in the following papers: 
+The libsais is a library for fast linear time suffix array based on induced sorting algorithm described in the following papers: 
 * Ge Nong, Sen Zhang, Wai Hong Chan *Two Efficient Algorithms for Linear Suffix Array Construction*, 2009
 * Juha Karkkainen, Giovanni Manzini, Simon J. Puglisi *Permuted Longest-Common-Prefix Array*, 2009
 * Nataliya Timoshevskaya, Wu-chun Feng *SAIS-OPT: On the characterization and optimization of the SA-IS algorithm for suffix array construction*, 2014
@@ -10,11 +10,8 @@ Copyright (c) 2021-2024 Ilya Grebnov <ilya.grebnov@gmail.com>
 
 >The libsais is inspired by [libdivsufsort](https://github.com/y-256/libdivsufsort), [sais](https://sites.google.com/site/yuta256/sais) libraries by Yuta Mori and [msufsort](https://github.com/michaelmaniscalco/msufsort) by Michael Maniscalco.
 
-## libcubwt
-If you are looking for even faster construction times, you can try [libcubwt](https://github.com/IlyaGrebnov/libcubwt) a library for GPU-based suffix array, inverse suffix array and Burrows-Wheeler transform construction.
-
 ## Introduction
-The libsais provides simple C99 API to construct suffix array and Burrows-Wheeler transformed string from a given string over constant-size alphabet. The algorithm runs in a linear time using typically only ~16KB of extra memory (with 2n bytes as absolute worst-case; where n is the length of the string). OpenMP acceleration uses 200KB of addition memory per thread.
+The libsais provides simple C99 API to construct suffix array from a given strin. The algorithm runs in a linear time.
 
 > * The libsais works with compilers from GNU, Microsoft and Intel, but I recommend Clang for best performance.
 > * The libsais is sensitive to fast memory and software prefetching and might not be suitable for some workloads. Please benchmark yourself.
@@ -23,11 +20,9 @@ The libsais provides simple C99 API to construct suffix array and Burrows-Wheele
 The libsais is released under the [Apache License Version 2.0](LICENSE "Apache license")
 
 ## Versions of the libsais
-* [libsais.c](src/libsais.c) (and corresponding [libsais.h](include/libsais.h)) is for suffix array, PLCP, LCP, forward BWT and reverse BWT construction over 8-bit inputs smaller than 2GB (2147483648 bytes).
-  * [libsais64.c](src/libsais64.c) (and corresponding [libsais64.h](include/libsais64.h)) is optional extension of the library for inputs larger or equlas to 2GB (2147483648 bytes).
-  * This versions of the library could also be used to construct suffix array of an integer array (with a caveat that input array must be mutable).
-* [libsais16.c](src/libsais16.c) + [libsais16x64.c](src/libsais16x64.c) (and corresponding [libsais16.h](include/libsais16.h) + [libsais16x64.h](include/libsais16x64.h)) is independent version of the library for 16-bit inputs.
-  * This version of the library could also be used to construct suffix array and BWT of a set of strings by adding a unique end-of-string symbol to each string and then computing the result for the concatenated string.
+* [libsais64.c](src/libsais64.c) (and corresponding [libsais64.h](include/libsais64.h)) is for suffix array construction over 8-bit inputs for inputs larger or equlas to 2GB (2147483648 bytes).
+* [libsais16x64.c](src/libsais16x64.c) (and corresponding [libsais16x64.h](include/libsais16x64.h) is an independent version of the library for 16-bit inputs.
+* [libsais32x64.c](src/libsais32x64.c) (and corresponding [libsais32x64.h](include/libsais32x64.h) is an independent version of the library for 32-bit inputs.
 
 ## Examples of APIs (see [libsais16x64.h](include/libsais16x64.h), see [libsais32x64.h](include/libsais32x64.h) and [libsais64.h](include/libsais64.h) for complete APIs list)
 ```c
@@ -63,11 +58,11 @@ The libsais is released under the [Apache License Version 2.0](LICENSE "Apache l
     * @param freq [0..65535] The output 32-bit symbol frequency table (can be NULL).
     * @return 0 if no error occurred, -1 or -2 otherwise.
     */
-    LIBSAIS32X64_API int64_t libsais32x64(const uint32_t * T, int64_t * SA, int64_t n, int64_t k, int64_t fs, int64_t * freq);
+    int64_t libsais32x64(const uint32_t * T, int64_t * SA, int64_t n, int64_t k, int64_t fs, int64_t * freq);
 ```
 
 # Algorithm description
-The libsais uses the SA-IS (Suffix Array Induced Sorting) algorithm to construct both the suffix array and the Burrows-Wheeler transform through recursive decomposition and induced sorting:
+The libsais uses the SA-IS (Suffix Array Induced Sorting) algorithm to construct both the suffix array through recursive decomposition and induced sorting:
 * Initially, the algorithm classifies each position in a string as either an S-type or an L-type, based on whether the suffix starting at that position is lexicographically smaller or larger than the suffix at the adjacent right position. Positions identified as S-type, which have an adjacent left L-type position, are further categorized as LMS-type (Leftmost S-type) positions. Next, the algorithm splits the input string into LMS substrings, which start at an LMS-type position and extend up to the next adjacent LMS-type position. These LMS substrings are then lexicographically sorted through induced sorting and subsequently replaced in the input string with their corresponding sorted ranks, thus forming a new, compacted string. This compacted string reduces the problem size, enabling the algorithm to perform a recursive decomposition in which it is reapplied to construct the suffix array for the compacted string. And at the end of the recursive call, the suffix array for the input string is constructed from the suffix array of the compacted string using another round of induced sorting.
 * The induced sorting is a core mechanic of the SA-IS algorithm and is employed twice during each recursive call: initially before the recursive call to establish the order of LMS substrings, and subsequently after the recursive call to finalize the order of the suffixes of the string. This process involves two sequential scans: a left-to-right scan that determines the order of L-type positions based on the LMS-type positions, followed by a right-to-left scan that establishes the order of S-type positions based on L-type positions. These scans efficiently extend the ordering from LMS-type positions to all positions in the string.
 
