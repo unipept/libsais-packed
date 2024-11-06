@@ -10,8 +10,14 @@ Original Copyright (c) 2021-2024 Ilya Grebnov <ilya.grebnov@gmail.com>
 
 >The libsais is inspired by [libdivsufsort](https://github.com/y-256/libdivsufsort), [sais](https://sites.google.com/site/yuta256/sais) libraries by Yuta Mori and [msufsort](https://github.com/michaelmaniscalco/msufsort) by Michael Maniscalco.
 
+## Changes
+* Removed functionality for computing the Burrows-Wheeler transform and longest common prefix array.
+* Removed OpenMP acceleration.
+* Removed construction of a 32-bit suffix array.
+* Added functionality for contstructing a 64-bit suffix array for a 32-bit input.
+
 ## Introduction
-The libsais provides simple C99 API to construct suffix array from a given strin. The algorithm runs in a linear time.
+The libsais provides simple C99 API to construct suffix array from a given string. The algorithm runs in a linear time.
 
 > * The libsais works with compilers from GNU, Microsoft and Intel, but I recommend Clang for best performance.
 > * The libsais is sensitive to fast memory and software prefetching and might not be suitable for some workloads. Please benchmark yourself.
