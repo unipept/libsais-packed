@@ -21,6 +21,10 @@ Please see the file LICENSE for full copyright information.
 
 --*/
 
+/*--
+Modifications made by team Unipept as of 18/10/2024 and ongoing.
+--*/
+
 #include "libsais32x64.h"
 
 #include <stddef.h>
@@ -29,12 +33,6 @@ Please see the file LICENSE for full copyright information.
 #include <string.h>
 #include <limits.h>
 #include <stdio.h>
-
-#if defined(LIBSAIS_OPENMP)
-    #include <omp.h>
-#else
-    #define UNUSED(_x)                  (void)(_x)
-#endif
 
 typedef int64_t                         sa_sint_t;
 typedef uint64_t                        sa_uint_t;

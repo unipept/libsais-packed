@@ -21,6 +21,10 @@ Please see the file LICENSE for full copyright information.
 
 --*/
 
+/*--
+Modifications made by team Unipept as of 18/10/2024 and ongoing.
+--*/
+
 #ifndef LIBSAIS16X64_H
 #define LIBSAIS16X64_H 1
 
