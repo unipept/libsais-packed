@@ -1,12 +1,12 @@
-# unipept-libsais
+# unipept-libsais (Forked version of libsais)
 
-The libsais is a library for fast linear time suffix array based on induced sorting algorithm described in the following papers: 
+This fork of `libsais` includes modifications. The libsais library is a tool for fast linear time suffix array based on induced sorting algorithm described in the following papers: 
 * Ge Nong, Sen Zhang, Wai Hong Chan *Two Efficient Algorithms for Linear Suffix Array Construction*, 2009
 * Juha Karkkainen, Giovanni Manzini, Simon J. Puglisi *Permuted Longest-Common-Prefix Array*, 2009
 * Nataliya Timoshevskaya, Wu-chun Feng *SAIS-OPT: On the characterization and optimization of the SA-IS algorithm for suffix array construction*, 2014
 * Jing Yi Xie, Ge Nong, Bin Lao, Wentao Xu *Scalable Suffix Sorting on a Multicore Machine*, 2020
 
-Copyright (c) 2021-2024 Ilya Grebnov <ilya.grebnov@gmail.com>
+Original Copyright (c) 2021-2024 Ilya Grebnov <ilya.grebnov@gmail.com>
 
 >The libsais is inspired by [libdivsufsort](https://github.com/y-256/libdivsufsort), [sais](https://sites.google.com/site/yuta256/sais) libraries by Yuta Mori and [msufsort](https://github.com/michaelmaniscalco/msufsort) by Michael Maniscalco.
 
