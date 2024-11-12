@@ -98,7 +98,7 @@ int64_t* build_sa_optimized(uint8_t* text, size_t length, int64_t sparseness_fac
     perror("Alphabet too big");
 }
 
-int64_t* build_sa(uint8_t* text, size_t length, int64_t sparseness_factor, int dna) {
+int64_t* build_sa(uint8_t* text, size_t length, int64_t sparseness_factor) {
 
     // Allocate memory for the suffix array (sa)
     int64_t *sa = (int64_t *)malloc(length * sizeof(int64_t));
@@ -116,6 +116,7 @@ int64_t* build_sa(uint8_t* text, size_t length, int64_t sparseness_factor, int d
     for (size_t i = 0; i < length; i ++) {
         if (sa[i] % sparseness_factor == 0) {
             sa[ssa_index] = sa[i];
+            ssa_index ++;
         }
     }
 
@@ -167,7 +168,7 @@ int main(int argc, char *argv[]) {
     if (optimized > 0) {
         sa = build_sa_optimized(text, length, sparseness_factor, sa_length, dna);
     } else {
-        sa = build_sa(text, length, sparseness_factor, dna);
+        sa = build_sa(text, length, sparseness_factor);
     }
     printf("Done building SA in %fs\n", ((double) clock() - start_sa) / CLOCKS_PER_SEC);
 
