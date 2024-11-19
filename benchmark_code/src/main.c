@@ -87,6 +87,8 @@ int64_t* build_sa_optimized(uint8_t* text, size_t length, int64_t sparseness_fac
         uint32_t* packed_text = bitpack_text_32(text, length, sparseness_factor, sa_length, dna);
         libsais32x64(packed_text, sa, sa_length, 1 << required_bits, 0, NULL);
 
+    } else {
+        perror("Alphabet too big\n");
     }
 
     for (size_t i = 0; i < sa_length; i ++) {
@@ -94,8 +96,6 @@ int64_t* build_sa_optimized(uint8_t* text, size_t length, int64_t sparseness_fac
     }
 
     return sa;
-
-    perror("Alphabet too big");
 }
 
 int64_t* build_sa(uint8_t* text, size_t length, int64_t sparseness_factor) {
