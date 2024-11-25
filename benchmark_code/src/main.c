@@ -72,7 +72,12 @@ int64_t* build_sa_optimized(uint8_t* text, size_t length, int64_t sparseness_fac
     uint8_t bits_per_char = dna > 0? BITS_PER_CHAR_DNA: BITS_PER_CHAR;
 
     int64_t required_bits = bits_per_char * sparseness_factor;
-    if (required_bits <= 8) {
+    
+    if (sparseness_factor == 1) {
+
+        libsais64(text, sa, sa_length, 0, NULL);
+    
+    } else if (required_bits <= 8) {
         
         uint8_t* packed_text = bitpack_text_8(text, length, sparseness_factor, sa_length, dna);
         libsais64(packed_text, sa, sa_length, 0, NULL);
@@ -91,8 +96,10 @@ int64_t* build_sa_optimized(uint8_t* text, size_t length, int64_t sparseness_fac
         perror("Alphabet too big\n");
     }
 
-    for (size_t i = 0; i < sa_length; i ++) {
-        sa[i] *= sparseness_factor;
+    if (sparseness_factor > 1) {
+        for (size_t i = 0; i < sa_length; i ++) {
+            sa[i] *= sparseness_factor;
+        }
     }
 
     return sa;
@@ -112,11 +119,13 @@ int64_t* build_sa(uint8_t* text, size_t length, int64_t sparseness_factor) {
     libsais64(text, sa, length, 0, NULL);
 
     // Sample the suffix array
-    size_t ssa_index = 0;
-    for (size_t i = 0; i < length; i ++) {
-        if (sa[i] % sparseness_factor == 0) {
-            sa[ssa_index] = sa[i];
-            ssa_index ++;
+    if (sparseness_factor > 1) {
+        size_t ssa_index = 0;
+        for (size_t i = 0; i < length; i ++) {
+            if (sa[i] % sparseness_factor == 0) {
+                sa[ssa_index] = sa[i];
+                ssa_index ++;
+            }
         }
     }
 

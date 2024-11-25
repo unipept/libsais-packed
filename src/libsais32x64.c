@@ -347,8 +347,7 @@ static sa_sint_t libsais32x64_count_and_gather_lms_suffixes_32u(const uint32_t *
             buckets[BUCKETS_INDEX4((fast_uint_t)c1, s & 3)]++;
         }
 
-        c1 = (i >= 0) ? (fast_sint_t) T[i] : -1;
-        s = (s << 1) + (fast_uint_t)(c1 > (c0 - (fast_sint_t)(s & 1))); SA[m] = (sa_sint_t)(i + 1); m -= ((s & 3) == 1);
+        c1 = (i >= 0) ? (fast_sint_t) T[i] : -1; s = (s << 1) + (fast_uint_t)(c1 > (c0 - (fast_sint_t)(s & 1))); SA[m] = (sa_sint_t)(i + 1); m -= ((s & 3) == 1);
         buckets[BUCKETS_INDEX4((fast_uint_t)c0, s & 3)]++;
     }
 
