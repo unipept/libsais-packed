@@ -76,20 +76,24 @@ int64_t* build_sa_optimized(uint8_t* text, size_t length, int64_t sparseness_fac
     if (sparseness_factor == 1) {
 
         libsais64(text, sa, sa_length, 0, NULL);
+        free(text);
     
     } else if (required_bits <= 8) {
         
         uint8_t* packed_text = bitpack_text_8(text, length, sparseness_factor, sa_length, dna);
+        free(text);
         libsais64(packed_text, sa, sa_length, 0, NULL);
 
     } else if (required_bits <= 16) {
         
         uint16_t* packed_text = bitpack_text_16(text, length, sparseness_factor, sa_length, dna);
+        free(text);
         libsais16x64(packed_text, sa, sa_length, 0, NULL);
 
     } else if (required_bits <= 32) {
         
         uint32_t* packed_text = bitpack_text_32(text, length, sparseness_factor, sa_length, dna);
+        free(text);
         libsais32x64(packed_text, sa, sa_length, 1 << required_bits, 0, NULL);
 
     } else {
@@ -187,7 +191,6 @@ int main(int argc, char *argv[]) {
     printf("Done writing results to %s in %fs\n\n", argv[4], ((double) clock() - start_writing) / CLOCKS_PER_SEC);
 
     // Clean up
-    free(sa);
     free(text);
     return 0;
 }
