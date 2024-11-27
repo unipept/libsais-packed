@@ -44,3 +44,4 @@ target_include_directories(libsais64 PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/benchmark_code/include>
     $<INSTALL_INTERFACE:include>
 )
+target_link_libraries(libsais64 m)
