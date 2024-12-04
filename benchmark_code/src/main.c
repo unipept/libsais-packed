@@ -215,6 +215,14 @@ void write_sa(char* output_fn, uint8_t sparseness_factor, uint64_t* sa, size_t s
     fclose(output_file);
 }
 
+void translate_L_to_I(uint8_t* text, size_t length) {
+    for (size_t i = 0; i < length; i ++) {
+        if (text[i] == 'L') {
+            text[i] = 'I';
+        }
+    }
+}
+
 int main(int argc, char *argv[]) {
     printf("Command being executed: ");
     for (int i = 0; i < argc; i ++) {
@@ -236,6 +244,9 @@ int main(int argc, char *argv[]) {
     printf("Started reading input file...\n");
     size_t length;
     uint8_t* text = read_text(argv[3], &length);
+    if (dna <= 0) { // Translate L to I in protein alfabet
+        translate_L_to_I(text, length);
+    }
     printf("Done reading input file in %fs\n", ((double) clock() - start_reading) / CLOCKS_PER_SEC);
 
     clock_t start_sa = clock();
