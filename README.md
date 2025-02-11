@@ -8,9 +8,9 @@ Key Benefits:
 * Optimized for bioinformatics
 
 How It Works:
-	1.	Bit-pack characters into compact integers while preserving lexicographic order.
-	2.	Use Libsais to construct the suffix array of the transformed text.
-	3.	Achieve direct SSA construction, avoiding unnecessary memory overhead.
+1) Bit-pack characters into compact integers while preserving lexicographic order.
+2) Use Libsais to construct the suffix array of the transformed text.
+3) Achieve direct SSA construction, avoiding unnecessary memory overhead.
 
 ## Installation
 Clone the repository and build the executable:
