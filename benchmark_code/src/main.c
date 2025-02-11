@@ -3,7 +3,8 @@
 #include <stdint.h>
 #include <string.h>
 #include <time.h>
-#include <math.h> 
+#include <math.h>
+#include <unistd.h> 
 
 #include "bitpacking.h"
 #include "libsais16x64.h"
@@ -11,17 +12,14 @@
 #include "libsais64.h"
 
 
-void print_help() {
-    printf("Usage: ./libsais64 <sparseness> <optimized> <input_file> <output_file> <dna> <compressed>\n\n");
-    printf("<sparseness>       : Defines the sparseness factor (an integer).\n");
-    printf("<optimized>        : Flag to specify whether the optimized algorithm should be used.\n");
-    printf("                     Accepts values: >0 (optimized) or 0 (default).\n");
-    printf("<input_file>       : The path to the input file containing the DNA data.\n");
-    printf("<output_file>      : The path where the output will be saved.\n");
-    printf("<dna>              : Flag to specify whether the input file is DNA data or protein data.\n");
-    printf("                     Accepts values: >0 (dna) or 0 (protein).\n");
-    printf("<compressed>       : Flag to specify whether the output SA is compressed by bitpacking.\n");
-    printf("                     Accepts values: >0 (compressed) or 0 (uncompressed).\n");
+void print_usage() {
+    printf("Usage: ./libsais64 -s <sparseness> [-cdo] <input_file> <output_file>\n\n");
+    printf("-s <sparseness>        : Defines the sparseness factor (an integer).\n");
+    printf("-d                  : Flag to specify whether the input file is DNA data or protein data.\n");
+    printf("-c                  : Flag to specify whether the output SA is compressed by bitpacking.\n");
+    printf("-o                  : Flag to specify whether the optimized algorithm should be used.\n");
+    printf("<input_file>        : The path to the input file containing the DNA data.\n");
+    printf("<output_file>       : The path where the output will be saved.\n");
 }
 
 uint8_t* read_text(char* input_fn, size_t* length) {
@@ -30,7 +28,7 @@ uint8_t* read_text(char* input_fn, size_t* length) {
     FILE *input_file = fopen(input_fn, "r");
     if (input_file == NULL) {
         perror("Failed to open file");
-        print_help();
+        print_usage();
         exit(1);
     }
 
@@ -43,7 +41,7 @@ uint8_t* read_text(char* input_fn, size_t* length) {
     uint8_t *text = (uint8_t *)malloc(*length + 1);  // +1 for the null-terminator
     if (text == NULL) {
         perror("Failed to allocate memory");
-        print_help();
+        print_usage();
         fclose(input_file);
         exit(1);
     }
@@ -62,7 +60,7 @@ int64_t* allocate_sa(size_t sa_length) {
     int64_t *sa = (int64_t *)malloc(sa_length * sizeof(int64_t));
     if (sa == NULL) {
         perror("Failed to allocate memory for suffix array");
-        print_help();
+        print_usage();
         exit(1);
     }
 
@@ -118,7 +116,7 @@ int64_t* build_sa(uint8_t* text, size_t length, int64_t sparseness_factor) {
     int64_t *sa = (int64_t *)malloc(length * sizeof(int64_t));
     if (sa == NULL) {
         perror("Failed to allocate memory for suffix array");
-        print_help();
+        print_usage();
         free(text);
         exit(1);
     }
@@ -188,7 +186,7 @@ void write_sa(char* output_fn, uint8_t sparseness_factor, uint64_t* sa, size_t s
     FILE *output_file = fopen(output_fn, "wb");
     if (output_file == NULL) {
         perror("Failed to open output file");
-        print_help();
+        print_usage();
         free(sa);
         exit(1);
     }
@@ -230,20 +228,56 @@ int main(int argc, char *argv[]) {
     }
     printf("\n");
 
-    if (argc != 7) {
-        print_help();
-        return 1;
+    int opt;
+    int compressed = 0, dna = 0, optimized = 0;
+    char *sparseness = NULL;
+    char *input_file = NULL;
+    char *output_file = NULL;
+
+    // Parse command-line options
+    while ((opt = getopt(argc, argv, "s:cdo")) != -1) {
+        switch (opt) {
+            case 's': // Required argument
+                sparseness = optarg;
+                break;
+            case 'c':
+                compressed = 1;
+                break;
+            case 'd':
+                dna = 1;
+                break;
+            case 'o':
+                optimized = 1;
+                break;
+            default:
+                print_usage();
+                return EXIT_FAILURE;
+        }
     }
 
-    int64_t sparseness_factor = atoi(argv[1]);
-    int dna = atoi(argv[5]);
-    int optimized = atoi(argv[2]);
-    int compressed = atoi(argv[6]);
+    // Remaining arguments after options
+    if (optind + 2 != argc) {
+        fprintf(stderr, "Error: You must provide input and output files.\n");
+        print_usage();
+        return EXIT_FAILURE;
+    }
+
+    input_file = argv[optind];
+    output_file = argv[optind + 1];
+
+    // Validate required arguments
+    if (!sparseness) {
+        fprintf(stderr, "Error: Missing required option -s <sparseness>\n");
+        print_usage();
+        return EXIT_FAILURE;
+    }
+
+    int64_t sparseness_factor = atoi(sparseness);
 
     clock_t start_reading = clock();
-    printf("Started reading input file...\n");
+    printf("Started reading input file from %s ...\n", input_file);
     size_t length;
-    uint8_t* text = read_text(argv[3], &length);
+    uint8_t* text = read_text(input_file, &length);
     if (dna <= 0) { // Translate L to I in protein alfabet
         translate_L_to_I(text, length);
     }
@@ -264,8 +298,8 @@ int main(int argc, char *argv[]) {
 
     clock_t start_writing = clock();
     printf("Started writing results...\n");
-    write_sa(argv[4], (uint8_t) sparseness_factor_size, (uint64_t*) sa, sa_length, compressed);
-    printf("Done writing results to %s in %fs\n\n", argv[4], ((double) clock() - start_writing) / CLOCKS_PER_SEC);
+    write_sa(output_file, (uint8_t) sparseness_factor_size, (uint64_t*) sa, sa_length, compressed);
+    printf("Done writing results to %s in %fs\n\n", output_file, ((double) clock() - start_writing) / CLOCKS_PER_SEC);
 
     return 0;
 }
