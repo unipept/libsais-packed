@@ -60,4 +60,4 @@ Original Copyright (c) 2021-2024 Ilya Grebnov <ilya.grebnov@gmail.com>
 * Added functionality for contstructing a 64-bit suffix array for a 32-bit input.
 
 ## License
-Libsais is released under the [Apache License Version 2.0](LICENSE "Apache license")
+Unipept-libsais is released under the [Apache License Version 2.0](LICENSE "Apache license")
