@@ -32,7 +32,7 @@ Run the program with the following syntax:
 * -s <sparseness>: Defines the sparseness factor (an integer).
 * -d: Treats the input file as DNA data (default assumes proteomic data).
 * -c: Enables compressed output using bit-packing.
-* -o: Uses the optimized algorithm for faster processing.
+* -u: If enabled, the program will compute the SSA unoptimized, by computing the full SA and subsampling afterwards.
 * <input_file>: Path to the input file containing DNA/protein sequences.
 * <output_file>: Path where the sparse suffix array will be saved.
 

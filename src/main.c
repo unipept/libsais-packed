@@ -14,10 +14,10 @@
 
 void print_usage() {
     printf("Usage: ./build_ssa -s <sparseness> [-cdo] <input_file> <output_file>\n\n");
-    printf("-s <sparseness>        : Defines the sparseness factor (an integer).\n");
+    printf("-s <sparseness>     : Defines the sparseness factor (an integer).\n");
     printf("-d                  : Flag to specify whether the input file is DNA data or protein data.\n");
     printf("-c                  : Flag to specify whether the output SA is compressed by bitpacking.\n");
-    printf("-o                  : Flag to specify whether the optimized algorithm should be used.\n");
+    printf("-u                  : If enabled, the program will compute the SSA unoptimized, by computing the full SA and subsampling afterwards.\n");
     printf("<input_file>        : The path to the input file containing the DNA data.\n");
     printf("<output_file>       : The path where the output will be saved.\n");
 }
@@ -229,13 +229,13 @@ int main(int argc, char *argv[]) {
     printf("\n");
 
     int opt;
-    int compressed = 0, dna = 0, optimized = 0;
+    int compressed = 0, dna = 0, optimized = 1;
     char *sparseness = NULL;
     char *input_file = NULL;
     char *output_file = NULL;
 
     // Parse command-line options
-    while ((opt = getopt(argc, argv, "s:cdo")) != -1) {
+    while ((opt = getopt(argc, argv, "s:cdu")) != -1) {
         switch (opt) {
             case 's': // Required argument
                 sparseness = optarg;
@@ -246,8 +246,8 @@ int main(int argc, char *argv[]) {
             case 'd':
                 dna = 1;
                 break;
-            case 'o':
-                optimized = 1;
+            case 'u':
+                optimized = 0;
                 break;
             default:
                 print_usage();
