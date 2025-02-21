@@ -1,4 +1,4 @@
-# Efficient Sparse Suffix Array Construction with Libsais
+# Direct construction of sparse suffix arrays with Libsais
 
 This repository implements a memory-efficient method for direct sparse suffix array (SSA) construction using the Libsais library. Unlike traditional approaches that first build a full suffix array before sampling, this method directly constructs the SSA through a simple text transformation. By encoding groups of k characters into compact integer representations, the memory usage reduces significantly.
 
