@@ -26,7 +26,7 @@ This will generate the build_ssa executable.
 ## Usage
 Run the program with the following syntax:
 ```
-./build_ssa -s <sparseness> [-cdo] <input_file> <output_file>
+./build_ssa -s <sparseness> [-cdu] <input_file> <output_file>
 ```
 ### Arguments:
 * -s <sparseness>: Defines the sparseness factor (an integer).
@@ -38,7 +38,7 @@ Run the program with the following syntax:
 
 ### Example
 ```
-./build_ssa -s 3 -o input.txt output.ssa
+./build_ssa -s 3 input.txt output.ssa
 ```
 This command builds an SSA with sparseness factor 3, treats the input as proteomic data, and uses the optimized algorithm.
 
