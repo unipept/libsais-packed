@@ -37,7 +37,7 @@ Run the program with the following syntax:
 
 ### Example
 ```
-./build_ssa -s 3 input.txt output.ssa
+./build_ssa -s 3 ../example_data/uniprot_entries.1000.txt output.ssa
 ```
 This command builds an SSA with sparseness factor 3 and uses the optimized algorithm.
 
