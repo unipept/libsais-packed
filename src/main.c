@@ -15,7 +15,6 @@
 void print_usage() {
     printf("Usage: ./build_ssa -s <sparseness> [-cdo] <input_file> <output_file>\n\n");
     printf("-s <sparseness>     : Defines the sparseness factor (an integer).\n");
-    printf("-d                  : Flag to specify whether the input file is DNA data or protein data.\n");
     printf("-c                  : Flag to specify whether the output SA is compressed by bitpacking.\n");
     printf("-u                  : If enabled, the program will compute the SSA unoptimized, by computing the full SA and subsampling afterwards.\n");
     printf("<input_file>        : The path to the input file containing the DNA data.\n");
@@ -70,7 +69,9 @@ int64_t* allocate_sa(size_t sa_length) {
 int64_t* build_sa_optimized(uint8_t* text, size_t length, int64_t sparseness_factor, size_t sa_length, int dna) {
     int64_t* sa = allocate_sa(sa_length);
 
-    uint8_t bits_per_char = dna > 0? BITS_PER_CHAR_DNA: BITS_PER_CHAR;
+    uint8_t orig_alph_size = 0;
+    uint8_t* char_to_rank = build_char_to_rank(text, length, &orig_alph_size);
+    uint8_t bits_per_char = ceil(log2(orig_alph_size));
 
     int64_t required_bits = bits_per_char * sparseness_factor;
     
@@ -81,19 +82,19 @@ int64_t* build_sa_optimized(uint8_t* text, size_t length, int64_t sparseness_fac
     
     } else if (required_bits <= 8) {
         
-        uint8_t* packed_text = bitpack_text_8(text, length, sparseness_factor, sa_length, dna);
+        uint8_t* packed_text = bitpack_text_8(text, length, sparseness_factor, sa_length, char_to_rank, bits_per_char);
         free(text);
         libsais64(packed_text, sa, sa_length, 0, NULL);
 
     } else if (required_bits <= 16) {
         
-        uint16_t* packed_text = bitpack_text_16(text, length, sparseness_factor, sa_length, dna);
+        uint16_t* packed_text = bitpack_text_16(text, length, sparseness_factor, sa_length, char_to_rank, bits_per_char);
         free(text);
         libsais16x64(packed_text, sa, sa_length, 0, NULL);
 
     } else if (required_bits <= 32) {
         
-        uint32_t* packed_text = bitpack_text_32(text, length, sparseness_factor, sa_length, dna);
+        uint32_t* packed_text = bitpack_text_32(text, length, sparseness_factor, sa_length, char_to_rank, bits_per_char);
         free(text);
         libsais32x64(packed_text, sa, sa_length, 1 << required_bits, 0, NULL);
 
@@ -213,14 +214,6 @@ void write_sa(char* output_fn, uint8_t sparseness_factor, uint64_t* sa, size_t s
     fclose(output_file);
 }
 
-void translate_L_to_I(uint8_t* text, size_t length) {
-    for (size_t i = 0; i < length; i ++) {
-        if (text[i] == 'L') {
-            text[i] = 'I';
-        }
-    }
-}
-
 int main(int argc, char *argv[]) {
     printf("Command being executed: ");
     for (int i = 0; i < argc; i ++) {
@@ -235,16 +228,13 @@ int main(int argc, char *argv[]) {
     char *output_file = NULL;
 
     // Parse command-line options
-    while ((opt = getopt(argc, argv, "s:cdu")) != -1) {
+    while ((opt = getopt(argc, argv, "s:cu")) != -1) {
         switch (opt) {
             case 's': // Required argument
                 sparseness = optarg;
                 break;
             case 'c':
                 compressed = 1;
-                break;
-            case 'd':
-                dna = 1;
                 break;
             case 'u':
                 optimized = 0;
@@ -278,9 +268,6 @@ int main(int argc, char *argv[]) {
     printf("Started reading input file from %s ...\n", input_file);
     size_t length;
     uint8_t* text = read_text(input_file, &length);
-    if (dna <= 0) { // Translate L to I in protein alfabet
-        translate_L_to_I(text, length);
-    }
     printf("Done reading input file in %fs\n", ((double) clock() - start_reading) / CLOCKS_PER_SEC);
 
     clock_t start_sa = clock();

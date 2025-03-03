@@ -26,11 +26,10 @@ This will generate the build_ssa executable.
 ## Usage
 Run the program with the following syntax:
 ```
-./build_ssa -s <sparseness> [-cdu] <input_file> <output_file>
+./build_ssa -s <sparseness> [-cu] <input_file> <output_file>
 ```
 ### Arguments:
 * -s <sparseness>: Defines the sparseness factor (an integer).
-* -d: Treats the input file as DNA data (default assumes proteomic data).
 * -c: Enables compressed output using bit-packing.
 * -u: If enabled, the program will compute the SSA unoptimized, by computing the full SA and subsampling afterwards.
 * <input_file>: Path to the input file containing DNA/protein sequences.
@@ -40,7 +39,7 @@ Run the program with the following syntax:
 ```
 ./build_ssa -s 3 input.txt output.ssa
 ```
-This command builds an SSA with sparseness factor 3, treats the input as proteomic data, and uses the optimized algorithm.
+This command builds an SSA with sparseness factor 3 and uses the optimized algorithm.
 
 ## Libsais
 This tool contains a modified fork of the `libsais` library. The libsais library is a tool for fast linear time suffix array based on induced sorting algorithm described in the following papers: 

@@ -8,4 +8,4 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 include_directories(include libsais/include)
 set(SRC_FILES src/main.c src/bitpacking.c libsais/src/libsais64.c libsais/src/libsais16x64.c libsais/src/libsais32x64.c)
 
-add_executable(build_ssa ${SRC_FILES})
+add_executable(libsais-packed ${SRC_FILES})
