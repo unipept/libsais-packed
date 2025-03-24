@@ -9,9 +9,10 @@ include_directories(include libsais/include)
 set(SRC_FILES src/main.c src/bitpacking.c libsais/src/libsais64.c libsais/src/libsais16x64.c libsais/src/libsais32x64.c)
 
 add_executable(libsais-packed ${SRC_FILES})
+target_link_libraries(libsais-packed m)
 
 add_library(libsais STATIC)
-
+target_link_libraries(libsais m)
 target_sources(libsais PRIVATE
     libsais/include/libsais64.h
     libsais/include/libsais16x64.h
