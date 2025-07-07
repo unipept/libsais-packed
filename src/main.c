@@ -13,10 +13,11 @@
 
 
 void print_usage() {
-    printf("Usage: ./build_ssa -s <sparseness> [-cdo] <input_file> <output_file>\n\n");
+    printf("Usage: ./libsais-packed -s <sparseness> [-cud] <input_file> <output_file>\n\n");
     printf("-s <sparseness>     : Defines the sparseness factor (an integer).\n");
     printf("-c                  : Flag to specify whether the output SA is compressed by bitpacking.\n");
     printf("-u                  : If enabled, the program will compute the SSA unoptimized, by computing the full SA and subsampling afterwards.\n");
+    printf("-d                  : If enabled, the program will dynamically choose a sparseness factor to use internally\n");
     printf("<input_file>        : The path to the input file containing the DNA data.\n");
     printf("<output_file>       : The path where the output will be saved.\n");
 }
@@ -66,7 +67,7 @@ int64_t* allocate_sa(size_t sa_length) {
     return sa;
 }
 
-int64_t* build_sa_optimized(uint8_t* text, size_t length, int64_t sparseness_factor, size_t sa_length, int dna) {
+int64_t* build_sa_optimized(uint8_t* text, size_t length, int64_t sparseness_factor, size_t sa_length) {
     int64_t* sa = allocate_sa(sa_length);
 
     uint8_t orig_alph_size = 0;
@@ -109,6 +110,80 @@ int64_t* build_sa_optimized(uint8_t* text, size_t length, int64_t sparseness_fac
     }
 
     return sa;
+}
+
+int64_t* build_sa_optimized_dynamic(uint8_t* text, size_t length, int64_t sparseness_factor, size_t sa_length) {
+
+    uint8_t orig_alph_size = 0;
+    uint8_t* char_to_rank = build_char_to_rank(text, length, &orig_alph_size);
+    uint8_t bits_per_char = ceil(log2(orig_alph_size));
+
+    // Determine adjusted sparseness factor to keep required_bits ≤ 28
+    int64_t adjusted_sparseness = sparseness_factor;
+    while ((bits_per_char * adjusted_sparseness > 20 || sparseness_factor % adjusted_sparseness != 0) && adjusted_sparseness > 1) {
+        adjusted_sparseness --;
+    }
+
+    size_t adjusted_sa_length = (length + adjusted_sparseness - 1) / adjusted_sparseness;
+    int64_t* sa_full = allocate_sa(adjusted_sa_length);
+    int64_t required_bits = bits_per_char * sparseness_factor;
+    printf("%lld", adjusted_sparseness);
+
+    if (adjusted_sparseness == 1) {
+
+        libsais64(text, sa_full, adjusted_sa_length, 0, NULL);
+        free(text);
+
+    } else if (bits_per_char * adjusted_sparseness <= 8) {
+
+        uint8_t* packed_text = bitpack_text_8(text, length, adjusted_sparseness, adjusted_sa_length, char_to_rank, bits_per_char);
+        free(text);
+        libsais64(packed_text, sa_full, adjusted_sa_length, 0, NULL);
+
+    } else if (bits_per_char * adjusted_sparseness <= 16) {
+
+        uint16_t* packed_text = bitpack_text_16(text, length, adjusted_sparseness, adjusted_sa_length, char_to_rank, bits_per_char);
+        free(text);
+        libsais16x64(packed_text, sa_full, adjusted_sa_length, 0, NULL);
+
+    } else if (bits_per_char * adjusted_sparseness <= 20) {
+
+        uint32_t* packed_text = bitpack_text_32(text, length, adjusted_sparseness, adjusted_sa_length, char_to_rank, bits_per_char);
+        free(text);
+        libsais32x64(packed_text, sa_full, adjusted_sa_length, 1 << (bits_per_char * adjusted_sparseness), 0, NULL);
+
+    } else {
+        free(sa_full);
+        free(text);
+        perror("Could not reduce sparseness enough to satisfy 28-bit constraint\n");
+        return NULL;
+    }
+
+    // Apply final subsampling (to match original sparseness)
+    if (sparseness_factor != adjusted_sparseness) {
+        int64_t factor = sparseness_factor / adjusted_sparseness;
+        size_t final_sa_length = (length + sparseness_factor - 1) / sparseness_factor;
+        size_t j = 0;
+
+        for (size_t i = 0; i < adjusted_sa_length && j < final_sa_length; ++i) {
+            if (sa_full[i] % factor == 0) {
+                sa_full[j] = sa_full[i] / factor;
+                j++;
+            }
+        }
+
+        sa_full = realloc(sa_full, final_sa_length * sizeof(int64_t));
+        return sa_full;
+    }
+
+    // Re-multiply back to original coordinates
+    if (sparseness_factor > 1) {
+        for (size_t i = 0; i < sa_length; i++) {
+            sa_full[i] *= sparseness_factor;
+        }
+    }
+
+    return sa_full;
 }
 
 int64_t* build_sa(uint8_t* text, size_t length, int64_t sparseness_factor) {
@@ -222,13 +297,13 @@ int main(int argc, char *argv[]) {
     printf("\n");
 
     int opt;
-    int compressed = 0, dna = 0, optimized = 1;
+    int compressed = 0, optimized = 1, dynamic = 0;
     char *sparseness = NULL;
     char *input_file = NULL;
     char *output_file = NULL;
 
     // Parse command-line options
-    while ((opt = getopt(argc, argv, "s:cu")) != -1) {
+    while ((opt = getopt(argc, argv, "s:cud")) != -1) {
         switch (opt) {
             case 's': // Required argument
                 sparseness = optarg;
@@ -238,6 +313,9 @@ int main(int argc, char *argv[]) {
                 break;
             case 'u':
                 optimized = 0;
+                break;
+            case 'd':
+                dynamic = 1;
                 break;
             default:
                 print_usage();
@@ -276,7 +354,11 @@ int main(int argc, char *argv[]) {
     size_t sa_length = (length + sparseness_factor_size - 1) / sparseness_factor_size;
     int64_t* sa;
     if (optimized > 0) {
-        sa = build_sa_optimized(text, length, sparseness_factor, sa_length, dna);
+        if (dynamic > 0) {
+            sa = build_sa_optimized_dynamic(text, length, sparseness_factor, sa_length);
+        } else {
+            sa = build_sa_optimized(text, length, sparseness_factor, sa_length);
+        }
     } else {
         sa = build_sa(text, length, sparseness_factor);
         free(text);
