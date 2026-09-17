@@ -2210,7 +2210,7 @@ static sa_sint_t libsais16x64_main_32s_recursion(sa_sint_t * RESTRICT T, sa_sint
     {
         sa_sint_t alignment = (fs - 1024) / k >= 6 ? (sa_sint_t)1024 : (sa_sint_t)16;
         sa_sint_t * RESTRICT buckets = (fs - alignment) / k >= 6 ? (sa_sint_t *)libsais16x64_align_up(&SA[n + fs - 6 * (fast_sint_t)k - alignment], (size_t)alignment * sizeof(sa_sint_t)) : &SA[n + fs - 6 * (fast_sint_t)k];
-        buckets = (LIBSAIS_LOCAL_BUFFER_SIZE / k >= 6) ? local_buffer : buckets;
+        buckets = (LIBSAIS_LOCAL_BUFFER_SIZE > fs) ? local_buffer : buckets;
 
         sa_sint_t m = libsais16x64_count_and_gather_lms_suffixes_32s_4k_omp(T, SA, n, k, buckets);
         if (m > 1)
