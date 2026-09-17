@@ -42,6 +42,13 @@ Run the program with the following syntax:
 ```
 This command builds an SSA with sparseness factor 3 and uses the optimized algorithm.
 
+## Testing
+Run a quick integration test against the files in `example_data/`:
+```
+tests/run_tests.sh
+```
+This builds the project and checks that the output for a fixed set of `-s`/`-u`/`-d`/`-c` combinations still matches the recorded hashes in `tests/expected_outputs.sha256`. If you intentionally change the output (e.g. a real algorithm change), regenerate the recorded hashes with `tests/run_tests.sh --update` and review the diff before committing.
+
 ## Libsais
 This tool contains a modified fork of the `libsais` library. The libsais library is a tool for fast linear time suffix array based on induced sorting algorithm described in the following papers: 
 * Ge Nong, Sen Zhang, Wai Hong Chan *Two Efficient Algorithms for Linear Suffix Array Construction*, 2009
