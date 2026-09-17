@@ -242,7 +242,7 @@ uint64_t* decompress_sa(uint64_t* sa, size_t orig_sa_length, uint8_t bits_per_el
     int8_t start_shift_element = 0;
     size_t compressed_i = 0;
     for (size_t i = 0; i < orig_sa_length; i ++) {
-        decompressed_sa[i] |= (sa[compressed_i] << start_shift_element) >> (64 - bits_per_element);
+        decompressed_sa[i] = (sa[compressed_i] << start_shift_element) >> (64 - bits_per_element);
         start_shift_element += bits_per_element;
         
         if (start_shift_element >= 64) {
