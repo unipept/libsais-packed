@@ -172,8 +172,12 @@ int64_t* build_sa_optimized_dynamic(uint8_t* text, size_t length, int64_t sparse
             }
         }
 
-        sa_full = realloc(sa_full, final_sa_length * sizeof(int64_t));
-        return sa_full;
+        int64_t* shrunk_sa = realloc(sa_full, final_sa_length * sizeof(int64_t));
+        if (shrunk_sa == NULL) {
+            free(sa_full);
+            return NULL;
+        }
+        return shrunk_sa;
     }
 
     // Re-multiply back to original coordinates
