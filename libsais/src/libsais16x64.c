@@ -174,7 +174,7 @@ static void libsais16x64_gather_lms_suffixes_16u(const uint16_t * RESTRICT T, sa
 {
     if (omp_block_size > 0)
     {
-        const fast_sint_t prefetch_distance = 128;
+        const fast_sint_t prefetch_distance = 256;
 
         fast_sint_t i, j = omp_block_start + omp_block_size, c0 = T[omp_block_start + omp_block_size - 1], c1 = -1;
 
@@ -211,7 +211,7 @@ static void libsais16x64_gather_lms_suffixes_16u_omp(const uint16_t * RESTRICT T
 
 static sa_sint_t libsais16x64_gather_lms_suffixes_32s(const sa_sint_t * RESTRICT T, sa_sint_t * RESTRICT SA, sa_sint_t n)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     sa_sint_t             i   = n - 2;
     sa_sint_t             m   = n - 1;
@@ -239,7 +239,7 @@ static sa_sint_t libsais16x64_gather_lms_suffixes_32s(const sa_sint_t * RESTRICT
 
 static sa_sint_t libsais16x64_gather_compacted_lms_suffixes_32s(const sa_sint_t * RESTRICT T, sa_sint_t * RESTRICT SA, sa_sint_t n)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     sa_sint_t             i   = n - 2;
     sa_sint_t             m   = n - 1;
@@ -267,7 +267,7 @@ static sa_sint_t libsais16x64_gather_compacted_lms_suffixes_32s(const sa_sint_t 
 
 static void libsais16x64_count_lms_suffixes_32s_2k(const sa_sint_t * RESTRICT T, sa_sint_t n, sa_sint_t k, sa_sint_t * RESTRICT buckets)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     memset(buckets, 0, 2 * (size_t)k * sizeof(sa_sint_t));
 
@@ -315,7 +315,7 @@ static sa_sint_t libsais16x64_count_and_gather_lms_suffixes_16u(const uint16_t *
 
     if (omp_block_size > 0)
     {
-        const fast_sint_t prefetch_distance = 128;
+        const fast_sint_t prefetch_distance = 256;
 
         fast_sint_t i, j = m + 1, c0 = T[m], c1 = -1;
 
@@ -373,7 +373,7 @@ static sa_sint_t libsais16x64_count_and_gather_lms_suffixes_32s_4k(const sa_sint
 
     if (omp_block_size > 0)
     {
-        const fast_sint_t prefetch_distance = 32;
+        const fast_sint_t prefetch_distance = 64;
 
         fast_sint_t i, j = m + 1, c0 = T[m], c1 = -1;
 
@@ -424,7 +424,7 @@ static sa_sint_t libsais16x64_count_and_gather_lms_suffixes_32s_2k(const sa_sint
 
     if (omp_block_size > 0)
     {
-        const fast_sint_t prefetch_distance = 32;
+        const fast_sint_t prefetch_distance = 64;
 
         fast_sint_t i, j = m + 1, c0 = T[m], c1 = -1;
 
@@ -475,7 +475,7 @@ static sa_sint_t libsais16x64_count_and_gather_compacted_lms_suffixes_32s_2k(con
 
     if (omp_block_size > 0)
     {
-        const fast_sint_t prefetch_distance = 32;
+        const fast_sint_t prefetch_distance = 64;
 
         fast_sint_t i, j = m + 1, c0 = T[m], c1 = -1;
 
@@ -548,7 +548,7 @@ static void libsais16x64_count_and_gather_compacted_lms_suffixes_32s_2k_omp(cons
 
 static void libsais16x64_count_suffixes_32s(const sa_sint_t * RESTRICT T, sa_sint_t n, sa_sint_t k, sa_sint_t * RESTRICT buckets)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     memset(buckets, 0, (size_t)k * sizeof(sa_sint_t));
 
@@ -704,7 +704,7 @@ static sa_sint_t libsais16x64_initialize_buckets_for_lms_suffixes_radix_sort_32s
 
 static void libsais16x64_radix_sort_lms_suffixes_16u(const uint16_t * RESTRICT T, sa_sint_t * RESTRICT SA, sa_sint_t * RESTRICT induction_bucket, fast_sint_t omp_block_start, fast_sint_t omp_block_size)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     fast_sint_t i, j;
     for (i = omp_block_start + omp_block_size - 1, j = omp_block_start + prefetch_distance + 3; i >= j; i -= 4)
@@ -735,7 +735,7 @@ static void libsais16x64_radix_sort_lms_suffixes_16u_omp(const uint16_t * RESTRI
 
 static void libsais16x64_radix_sort_lms_suffixes_32s_6k(const sa_sint_t * RESTRICT T, sa_sint_t * RESTRICT SA, sa_sint_t * RESTRICT induction_bucket, fast_sint_t omp_block_start, fast_sint_t omp_block_size)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     fast_sint_t i, j;
     for (i = omp_block_start + omp_block_size - 1, j = omp_block_start + 2 * prefetch_distance + 3; i >= j; i -= 4)
@@ -771,7 +771,7 @@ static void libsais16x64_radix_sort_lms_suffixes_32s_6k_omp(const sa_sint_t * RE
 
 static sa_sint_t libsais16x64_radix_sort_lms_suffixes_32s_1k(const sa_sint_t * RESTRICT T, sa_sint_t * RESTRICT SA, sa_sint_t n, sa_sint_t * RESTRICT buckets)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     sa_sint_t             i = n - 2;
     sa_sint_t             m = 0;
@@ -818,7 +818,7 @@ static sa_sint_t libsais16x64_radix_sort_lms_suffixes_32s_1k(const sa_sint_t * R
 
 static void libsais16x64_radix_sort_set_markers_32s_6k(sa_sint_t * RESTRICT SA, sa_sint_t * RESTRICT induction_bucket, fast_sint_t omp_block_start, fast_sint_t omp_block_size)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     fast_sint_t i, j;
     for (i = omp_block_start, j = omp_block_start + omp_block_size - prefetch_distance - 3; i < j; i += 4)
@@ -913,7 +913,7 @@ static void libsais16x64_initialize_buckets_for_partial_sorting_32s_6k(const sa_
 
 static sa_sint_t libsais16x64_partial_sorting_scan_left_to_right_16u(const uint16_t * RESTRICT T, sa_sint_t * RESTRICT SA, sa_sint_t * RESTRICT buckets, sa_sint_t d, fast_sint_t omp_block_start, fast_sint_t omp_block_size)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     sa_sint_t * RESTRICT induction_bucket = &buckets[4 * ALPHABET_SIZE];
     sa_sint_t * RESTRICT distinct_names   = &buckets[2 * ALPHABET_SIZE];
@@ -959,7 +959,7 @@ static sa_sint_t libsais16x64_partial_sorting_scan_left_to_right_16u_omp(const u
 
 static sa_sint_t libsais16x64_partial_sorting_scan_left_to_right_32s_6k(const sa_sint_t * RESTRICT T, sa_sint_t * RESTRICT SA, sa_sint_t * RESTRICT buckets, sa_sint_t d, fast_sint_t omp_block_start, fast_sint_t omp_block_size)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     fast_sint_t i, j;
     for (i = omp_block_start, j = omp_block_start + omp_block_size - 2 * prefetch_distance - 1; i < j; i += 2)
@@ -992,7 +992,7 @@ static sa_sint_t libsais16x64_partial_sorting_scan_left_to_right_32s_6k(const sa
 
 static void libsais16x64_partial_sorting_scan_left_to_right_32s_1k(const sa_sint_t * RESTRICT T, sa_sint_t * RESTRICT SA, sa_sint_t * RESTRICT induction_bucket, fast_sint_t omp_block_start, fast_sint_t omp_block_size)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     fast_sint_t i, j;
     for (i = omp_block_start, j = omp_block_start + omp_block_size - 2 * prefetch_distance - 1; i < j; i += 2)
@@ -1033,7 +1033,7 @@ static void libsais16x64_partial_sorting_scan_left_to_right_32s_1k_omp(const sa_
 
 static void libsais16x64_partial_sorting_shift_markers_16u_omp(sa_sint_t * RESTRICT SA, sa_sint_t n, const sa_sint_t * RESTRICT buckets)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     const sa_sint_t * RESTRICT temp_bucket = &buckets[4 * ALPHABET_SIZE];
 
@@ -1061,7 +1061,7 @@ static void libsais16x64_partial_sorting_shift_markers_16u_omp(sa_sint_t * RESTR
 
 static void libsais16x64_partial_sorting_shift_markers_32s_6k_omp(sa_sint_t * RESTRICT SA, sa_sint_t k, const sa_sint_t * RESTRICT buckets)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     const sa_sint_t * RESTRICT temp_bucket = &buckets[4 * (fast_sint_t)k];
     
@@ -1101,7 +1101,7 @@ static void libsais16x64_partial_sorting_shift_buckets_32s_6k(sa_sint_t k, sa_si
 
 static sa_sint_t libsais16x64_partial_sorting_scan_right_to_left_16u(const uint16_t * RESTRICT T, sa_sint_t * RESTRICT SA, sa_sint_t * RESTRICT buckets, sa_sint_t d, fast_sint_t omp_block_start, fast_sint_t omp_block_size)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     sa_sint_t * RESTRICT induction_bucket = &buckets[0 * ALPHABET_SIZE];
     sa_sint_t * RESTRICT distinct_names   = &buckets[2 * ALPHABET_SIZE];
@@ -1142,7 +1142,7 @@ static void libsais16x64_partial_sorting_scan_right_to_left_16u_omp(const uint16
 
 static sa_sint_t libsais16x64_partial_sorting_scan_right_to_left_32s_6k(const sa_sint_t * RESTRICT T, sa_sint_t * RESTRICT SA, sa_sint_t * RESTRICT buckets, sa_sint_t d, fast_sint_t omp_block_start, fast_sint_t omp_block_size)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     fast_sint_t i, j;
     for (i = omp_block_start + omp_block_size - 1, j = omp_block_start + 2 * prefetch_distance + 1; i >= j; i -= 2)
@@ -1175,7 +1175,7 @@ static sa_sint_t libsais16x64_partial_sorting_scan_right_to_left_32s_6k(const sa
 
 static void libsais16x64_partial_sorting_scan_right_to_left_32s_1k(const sa_sint_t * RESTRICT T, sa_sint_t * RESTRICT SA, sa_sint_t * RESTRICT induction_bucket, fast_sint_t omp_block_start, fast_sint_t omp_block_size)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     fast_sint_t i, j;
     for (i = omp_block_start + omp_block_size - 1, j = omp_block_start + 2 * prefetch_distance + 1; i >= j; i -= 2)
@@ -1214,7 +1214,7 @@ static void libsais16x64_partial_sorting_scan_right_to_left_32s_1k_omp(const sa_
 
 static fast_sint_t libsais16x64_partial_sorting_gather_lms_suffixes_32s_1k(sa_sint_t * RESTRICT SA, fast_sint_t omp_block_start, fast_sint_t omp_block_size)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     fast_sint_t i, j, l;
     for (i = omp_block_start, j = omp_block_start + omp_block_size - 3, l = omp_block_start; i < j; i += 4)
@@ -1275,7 +1275,7 @@ static void libsais16x64_induce_partial_order_32s_1k_omp(const sa_sint_t * RESTR
 
 static sa_sint_t libsais16x64_renumber_lms_suffixes_16u(sa_sint_t * RESTRICT SA, sa_sint_t m, sa_sint_t name, fast_sint_t omp_block_start, fast_sint_t omp_block_size)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     sa_sint_t * RESTRICT SAm = &SA[m];
 
@@ -1305,7 +1305,7 @@ static sa_sint_t libsais16x64_renumber_lms_suffixes_16u(sa_sint_t * RESTRICT SA,
 
 static fast_sint_t libsais16x64_gather_marked_lms_suffixes(sa_sint_t * RESTRICT SA, sa_sint_t m, fast_sint_t l, fast_sint_t omp_block_start, fast_sint_t omp_block_size)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     l -= 1;
 
@@ -1369,7 +1369,7 @@ static sa_sint_t libsais16x64_renumber_and_gather_lms_suffixes_omp(sa_sint_t * R
 
 static sa_sint_t libsais16x64_renumber_distinct_lms_suffixes_32s_4k(sa_sint_t * RESTRICT SA, sa_sint_t m, sa_sint_t name, fast_sint_t omp_block_start, fast_sint_t omp_block_size)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     sa_sint_t * RESTRICT SAm = &SA[m];
 
@@ -1399,7 +1399,7 @@ static sa_sint_t libsais16x64_renumber_distinct_lms_suffixes_32s_4k(sa_sint_t * 
 
 static void libsais16x64_mark_distinct_lms_suffixes_32s(sa_sint_t * RESTRICT SA, sa_sint_t m, fast_sint_t omp_block_start, fast_sint_t omp_block_size)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     fast_sint_t i, j; sa_sint_t p0, p1, p2, p3 = 0;
     for (i = (fast_sint_t)m + omp_block_start, j = (fast_sint_t)m + omp_block_start + omp_block_size - 3; i < j; i += 4)
@@ -1420,7 +1420,7 @@ static void libsais16x64_mark_distinct_lms_suffixes_32s(sa_sint_t * RESTRICT SA,
 
 static void libsais16x64_clamp_lms_suffixes_length_32s(sa_sint_t * RESTRICT SA, sa_sint_t m, fast_sint_t omp_block_start, fast_sint_t omp_block_size)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     sa_sint_t * RESTRICT SAm = &SA[m];
 
@@ -1484,7 +1484,7 @@ static sa_sint_t libsais16x64_renumber_and_mark_distinct_lms_suffixes_32s_4k_omp
 
 static sa_sint_t libsais16x64_renumber_and_mark_distinct_lms_suffixes_32s_1k_omp(sa_sint_t * RESTRICT T, sa_sint_t * RESTRICT SA, sa_sint_t n, sa_sint_t m)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     sa_sint_t * RESTRICT SAm = &SA[m];
 
@@ -1563,7 +1563,7 @@ static sa_sint_t libsais16x64_renumber_and_mark_distinct_lms_suffixes_32s_1k_omp
 
 static void libsais16x64_reconstruct_lms_suffixes(sa_sint_t * RESTRICT SA, sa_sint_t n, sa_sint_t m, fast_sint_t omp_block_start, fast_sint_t omp_block_size)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     const sa_sint_t * RESTRICT SAnm = &SA[n - m];
 
@@ -1622,7 +1622,7 @@ static void libsais16x64_place_lms_suffixes_interval_16u(sa_sint_t * RESTRICT SA
 
 static void libsais16x64_place_lms_suffixes_interval_32s_1k(const sa_sint_t * RESTRICT T, sa_sint_t * RESTRICT SA, sa_sint_t k, sa_sint_t m, sa_sint_t * RESTRICT buckets)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     sa_sint_t c = k - 1; fast_sint_t i, l = buckets[c];
     for (i = (fast_sint_t)m - 1; i >= prefetch_distance + 3; i -= 4)
@@ -1696,7 +1696,7 @@ static void libsais16x64_place_lms_suffixes_histogram_32s_4k(sa_sint_t * RESTRIC
 
 static void libsais16x64_final_bwt_scan_left_to_right_16u(const uint16_t * RESTRICT T, sa_sint_t * RESTRICT SA, sa_sint_t * RESTRICT induction_bucket, fast_sint_t omp_block_start, fast_sint_t omp_block_size)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     fast_sint_t i, j;
     for (i = omp_block_start, j = omp_block_start + omp_block_size - prefetch_distance - 1; i < j; i += 2)
@@ -1718,7 +1718,7 @@ static void libsais16x64_final_bwt_scan_left_to_right_16u(const uint16_t * RESTR
 
 static void libsais16x64_final_bwt_aux_scan_left_to_right_16u(const uint16_t * RESTRICT T, sa_sint_t * RESTRICT SA, sa_sint_t rm, sa_sint_t * RESTRICT I, sa_sint_t * RESTRICT induction_bucket, fast_sint_t omp_block_start, fast_sint_t omp_block_size)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     fast_sint_t i, j;
     for (i = omp_block_start, j = omp_block_start + omp_block_size - prefetch_distance - 1; i < j; i += 2)
@@ -1740,7 +1740,7 @@ static void libsais16x64_final_bwt_aux_scan_left_to_right_16u(const uint16_t * R
 
 static void libsais16x64_final_sorting_scan_left_to_right_16u(const uint16_t * RESTRICT T, sa_sint_t * RESTRICT SA, sa_sint_t * RESTRICT induction_bucket, fast_sint_t omp_block_start, fast_sint_t omp_block_size)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     fast_sint_t i, j;
     for (i = omp_block_start, j = omp_block_start + omp_block_size - prefetch_distance - 1; i < j; i += 2)
@@ -1762,7 +1762,7 @@ static void libsais16x64_final_sorting_scan_left_to_right_16u(const uint16_t * R
 
 static void libsais16x64_final_sorting_scan_left_to_right_32s(const sa_sint_t * RESTRICT T, sa_sint_t * RESTRICT SA, sa_sint_t * RESTRICT induction_bucket, fast_sint_t omp_block_start, fast_sint_t omp_block_size)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     fast_sint_t i, j;
     for (i = omp_block_start, j = omp_block_start + omp_block_size - 2 * prefetch_distance - 1; i < j; i += 2)
@@ -1816,7 +1816,7 @@ static void libsais16x64_final_sorting_scan_left_to_right_32s_omp(const sa_sint_
 
 static sa_sint_t libsais16x64_final_bwt_scan_right_to_left_16u(const uint16_t * RESTRICT T, sa_sint_t * RESTRICT SA, sa_sint_t * RESTRICT induction_bucket, fast_sint_t omp_block_start, fast_sint_t omp_block_size)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     fast_sint_t i, j; sa_sint_t index = -1;
     for (i = omp_block_start + omp_block_size - 1, j = omp_block_start + prefetch_distance + 1; i >= j; i -= 2)
@@ -1844,7 +1844,7 @@ static sa_sint_t libsais16x64_final_bwt_scan_right_to_left_16u(const uint16_t * 
 
 static void libsais16x64_final_bwt_aux_scan_right_to_left_16u(const uint16_t * RESTRICT T, sa_sint_t * RESTRICT SA, sa_sint_t rm, sa_sint_t * RESTRICT I, sa_sint_t * RESTRICT induction_bucket, fast_sint_t omp_block_start, fast_sint_t omp_block_size)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     fast_sint_t i, j;
     for (i = omp_block_start + omp_block_size - 1, j = omp_block_start + prefetch_distance + 1; i >= j; i -= 2)
@@ -1870,7 +1870,7 @@ static void libsais16x64_final_bwt_aux_scan_right_to_left_16u(const uint16_t * R
 
 static void libsais16x64_final_sorting_scan_right_to_left_16u(const uint16_t * RESTRICT T, sa_sint_t * RESTRICT SA, sa_sint_t * RESTRICT induction_bucket, fast_sint_t omp_block_start, fast_sint_t omp_block_size)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     fast_sint_t i, j;
     for (i = omp_block_start + omp_block_size - 1, j = omp_block_start + prefetch_distance + 1; i >= j; i -= 2)
@@ -1892,7 +1892,7 @@ static void libsais16x64_final_sorting_scan_right_to_left_16u(const uint16_t * R
 
 static void libsais16x64_final_sorting_scan_right_to_left_32s(const sa_sint_t * RESTRICT T, sa_sint_t * RESTRICT SA, sa_sint_t * RESTRICT induction_bucket, fast_sint_t omp_block_start, fast_sint_t omp_block_size)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     fast_sint_t i, j;
     for (i = omp_block_start + omp_block_size - 1, j = omp_block_start + 2 * prefetch_distance + 1; i >= j; i -= 2)
@@ -1997,7 +1997,7 @@ static void libsais16x64_induce_final_order_32s_1k(const sa_sint_t * RESTRICT T,
 
 static sa_sint_t libsais16x64_renumber_unique_and_nonunique_lms_suffixes_32s(sa_sint_t * RESTRICT T, sa_sint_t * RESTRICT SA, sa_sint_t m, sa_sint_t f, fast_sint_t omp_block_start, fast_sint_t omp_block_size)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     sa_sint_t * RESTRICT SAm = &SA[m];
 
@@ -2032,7 +2032,7 @@ static sa_sint_t libsais16x64_renumber_unique_and_nonunique_lms_suffixes_32s(sa_
 
 static void libsais16x64_compact_unique_and_nonunique_lms_suffixes_32s(sa_sint_t * RESTRICT SA, sa_sint_t m, fast_sint_t * pl, fast_sint_t * pr, fast_sint_t omp_block_start, fast_sint_t omp_block_size)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     sa_uint_t * RESTRICT SAl = (sa_uint_t *)&SA[0];
     sa_uint_t * RESTRICT SAr = (sa_uint_t *)&SA[0];
@@ -2090,7 +2090,7 @@ static sa_sint_t libsais16x64_compact_lms_suffixes_32s_omp(sa_sint_t * RESTRICT 
 
 static void libsais16x64_merge_unique_lms_suffixes_32s(sa_sint_t * RESTRICT T, sa_sint_t * RESTRICT SA, sa_sint_t n, sa_sint_t m, fast_sint_t l, fast_sint_t omp_block_start, fast_sint_t omp_block_size)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     const sa_sint_t * RESTRICT SAnm = &SA[(fast_sint_t)n - (fast_sint_t)m - 1 + l];
 
@@ -2113,7 +2113,7 @@ static void libsais16x64_merge_unique_lms_suffixes_32s(sa_sint_t * RESTRICT T, s
 
 static void libsais16x64_merge_nonunique_lms_suffixes_32s(sa_sint_t * RESTRICT SA, sa_sint_t n, sa_sint_t m, fast_sint_t l, fast_sint_t omp_block_start, fast_sint_t omp_block_size)
 {
-    const fast_sint_t prefetch_distance = 32;
+    const fast_sint_t prefetch_distance = 64;
 
     const sa_sint_t * RESTRICT SAnm = &SA[(fast_sint_t)n - (fast_sint_t)m - 1 + l];
 
